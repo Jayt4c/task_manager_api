@@ -1,3 +1,6 @@
 Flask
-Flask-SQLAlchemy
-Flask-JWT-Extended
+Blueprint
+flask_wtf
+bcrypt
+#Flask-SQLAlchemy
+#Flask-JWT-Extended
