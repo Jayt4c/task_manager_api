@@ -1,12 +1,13 @@
-from flask import render_template, Blueprint
+from flask import render_template, Blueprint, redirect, url_for
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email, ValidationError
-from flask_mysqldb import MySQL
 import bcrypt
+from db import mysql
 
 
 api = Blueprint('api', __name__)
+
 
 class RegisterForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
@@ -18,7 +19,7 @@ class RegisterForm(FlaskForm):
 def index():
     return render_template("index.html")
 
-@api.route('/register')
+@api.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
@@ -29,9 +30,14 @@ def register():
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
         #store registration data in database
-        
+        cursor = mysql.connection.cursor()
+        cursor.execute('INSERT INTO USERS (name, email, password) VALUES (%s, %s, %s)', (name, email, password))
+        mysql.connect.commit()
+        cursor.close()
 
-    return render_template("register.html")
+        return redirect(url_for('login'))
+
+    return render_template("register.html", form=form)
 
 @api.route('/login', methods=['GET'])
 def login():

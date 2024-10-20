@@ -2,5 +2,6 @@ Flask
 Blueprint
 flask_wtf
 bcrypt
+flask_mysqldb
 #Flask-SQLAlchemy
 #Flask-JWT-Extended
