@@ -1,1 +1,88 @@
-<h1>Dashboard</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <title>Dashboard - File Manager</title>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="comapany-name">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo">
+                <h1 class="navbar-title">File Manager</h1>
+            </div>      
+            <form action="{{ url_for('api.login') }}" method="POST" class="logout-form" onsubmit="return confirmLogout();">
+                <button type="submit" class="logout-button">Logout</button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="upload-section">
+            <form action="{{ url_for('api.upload_file') }}" method="POST" enctype="multipart/form-data">
+                <div class="file-upload-area">
+                    <input type="file" id="file-upload" name="file" class="file-upload" required onchange="updateFileName()" />
+                    <input type="text" id="file-name" class="file-name" placeholder="Drop a file here..." readonly />
+                    <label for="file-upload" class="file-upload-label">Browse</label>
+                </div>
+                <button type="submit" class="submit-button">Upload</button>
+            </form>
+        </div>
+    </div>
+        
+        <div class="file-list">
+            <form id="delete-form" action="/delete" method="POST">
+                <div class="footer">
+                    <button type="submit" class="delete-button">Delete</button>
+                    <span class="total-files">{{ files|length }} File(s) selected</span>
+                </div>
+                <div class="underline"></div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="th-select">
+                                    <input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)">
+                            </th>
+                            <th class="th-name">Name</th>
+                            <th class="th-filetype">Filetype</th>
+                            <th class="th-size">Size</th>
+                            <th class="th-added">Added</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for file in files %}
+                        <tr>
+                            <td><input type="checkbox" name="files" value="{{ file }}"></td>
+                            <td>{{ file[2] }}</td>
+                            <td>{{ file[2].split('.')[-1].upper() }}</td>
+                            <td>{{ get_file_size(file[2]) }}</td>
+                            <td>{{ get_file_date(file[2]) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function toggleSelectAll(source) {
+            const checkboxes = document.querySelectorAll('input[name="files"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = source.checked;
+            });
+        }
+        function confirmLogout() {
+            return confirm("Are you sure you want to logout?");
+        }
+        function updateFileName() {
+        const fileInput = document.getElementById('file-upload');
+        const fileNameInput = document.getElementById('file-name');
+
+        fileNameInput.value = fileInput.files.length > 0 ? fileInput.files[0].name : 'Drop a file here...';
+    }
+    </script>
+</body>
+</html>
