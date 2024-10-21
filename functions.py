@@ -2,6 +2,8 @@ import os
 import time
 from flask import current_app, session, flash, redirect, url_for
 
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'doc', 'docx', 'jpg', 'png'}
+
 def logout():
     session.pop('logged_in', None)
     flash('You have been logged out.')
