@@ -3,5 +3,7 @@ Blueprint
 flask_wtf
 bcrypt
 flask_mysqldb
+email-validator
+python-dotenv
 #Flask-SQLAlchemy
 #Flask-JWT-Extended
