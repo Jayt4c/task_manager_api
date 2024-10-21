@@ -61,3 +61,50 @@ button {
 button:hover {
     background-color: #0056b3;
 }
+.flashes {
+    list-style-type: none;
+    padding: 0;
+}
+
+.flashes li {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.flashes li.success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.flashes li.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+/* Flash Messages */
+#flash-messages {
+    margin: 20px 0;
+}
+
+.flash-message {
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    color: #fff; /* White text */
+}
+
+.flash-message.danger {
+    background-color: #e74c3c; /* Red background for errors */
+}
+
+.flash-message.success {
+    background-color: #2ecc71; /* Green background for success messages */
+}
+
+.flash-message.info {
+    background-color: #3498db; /* Blue background for informational messages */
+}
+
+.flash-message.warning {
+    background-color: #f39c12; /* Orange background for warnings */
+}
