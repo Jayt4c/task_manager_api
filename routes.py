@@ -4,8 +4,10 @@ from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email, ValidationError
 import bcrypt, os
 from db import mysql
+from functions import allowed_file
 from werkzeug.utils import secure_filename
 from datetime import datetime
+import ast
 
 api = Blueprint('api', __name__)
 secret_key = os.urandom(24)
@@ -121,37 +123,40 @@ def upload_file():
             return redirect(url_for('api.dashboard'))
     return redirect(url_for('api.dashboard'))
 
-@app.route('/delete_file/<int:file_id>', methods=['POST'])
-def delete_file(file_id):
+@api.route('/delete', methods=['POST'])
+def delete_files():
     if 'user_id' in session:
+        file_ids = request.form.getlist('files')
         cursor = mysql.connection.cursor()
+
         try:
-            # Fetch file metadata from the database
-            cursor.execute("SELECT file_path FROM file_manager.user_files WHERE id=%s", (file_id,))
-            file_record = cursor.fetchone()
+            for file_id in file_ids:
+                parts = file_id.strip().strip("()").split(", ")
+                
+                id_to_use = parts[0]
+                cursor.execute("SELECT file_path FROM file_manager.user_files WHERE id=%s", (id_to_use,))
+                file_record = cursor.fetchone()
+                print("File record found:", file_record)  # Debugging line
 
-            if file_record:
-                file_path = file_record[0]
+                if file_record:
+                    file_path = file_record[0]
 
-                # Delete the file from the local storage
-                if os.path.exists(file_path):
-                    os.remove(file_path)
-
-                # Delete the file record from the database
-                cursor.execute("DELETE FROM file_manager.user_files WHERE id=%s", (file_id,))
-                mysql.connection.commit()
-                flash("File deleted successfully.", "success")
-            else:
-                flash("File not found.", "danger")
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
+                    else:
+                        print(f"File does not exist: {file_path}")  # Debugging line
+                    cursor.execute("DELETE FROM file_manager.user_files WHERE id=%s", (id_to_use,))
+                    mysql.connection.commit()
+                    print(f"Deleted record for file_id: {id_to_use}")
+                else:
+                    print(f"No record found for ID: {id_to_use}")  # Debugging line
+            flash("Selected files deleted successfully.", "success")
         except Exception as e:
-            flash("Error deleting file: " + str(e), "danger")
+            flash("Error deleting files: " + str(e), "danger")
         finally:
             cursor.close()
 
-    return redirect(url_for('dashboard'))
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+    return redirect(url_for('api.dashboard'))
 
 @api.route('/logout')
 def logout():

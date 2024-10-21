@@ -33,7 +33,7 @@
     </div>
         
         <div class="file-list">
-            <form id="delete-form" action="/delete" method="POST">
+            <form id="delete-form" action="{{ url_for('api.delete_files') }}" method="POST">
                 <div class="footer">
                     <button type="submit" class="delete-button">Delete</button>
                     <span class="total-files">{{ files|length }} File(s) selected</span>
